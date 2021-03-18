@@ -7,6 +7,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { User } from './users/entities/user.entity';
       autoSchemaFile: true,
     }),
     UsersModule,
+    JwtModule,
   ],
   controllers: [],
   providers: [],
