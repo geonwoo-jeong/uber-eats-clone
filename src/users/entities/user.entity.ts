@@ -16,7 +16,7 @@ enum UserRole {
   Delivery,
 }
 
-registerEnumType(UserRole, { name: 'UserRole ' });
+registerEnumType(UserRole, { name: 'UserRole' });
 
 @InputType({ isAbstract: true })
 @Entity()
@@ -40,6 +40,15 @@ export class User extends CoreEntity {
   async hashPassword(): Promise<void> {
     try {
       this.password = await bcrypt.hash(this.password, 10);
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async checkPassword(aPassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(aPassword, this.password);
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();

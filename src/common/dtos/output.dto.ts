@@ -7,3 +7,4 @@ export class MutationOutput {
 
   @Field(type => Boolean)
   ok: boolean;
+}
