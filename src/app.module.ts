@@ -27,6 +27,7 @@ import { JwtModule } from './jwt/jwt.module';
         SECRET_KEY: Joi.string().required(),
       }),
     }),
+    JwtModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DB_HOST,
@@ -42,7 +43,6 @@ import { JwtModule } from './jwt/jwt.module';
       autoSchemaFile: true,
     }),
     UsersModule,
-    JwtModule,
   ],
   controllers: [],
   providers: [],
