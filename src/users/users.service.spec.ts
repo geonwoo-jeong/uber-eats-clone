@@ -67,6 +67,7 @@ describe('UserService', () => {
         ok: false,
       });
     });
+
     it('should create a new user', async () => {
       usersRepository.findOne.mockReturnValue(undefined);
       usersRepository.create.mockReturnValue(createAccountArgs);
@@ -92,8 +93,31 @@ describe('UserService', () => {
       });
       expect(result).toEqual({ ok: true });
     });
+
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.createAccount(createAccountArgs);
+      expect(result).toEqual({ ok: false, error: "Couldn't create account" });
+    });
   });
-  it.todo('login');
+
+  describe('login', () => {
+    const loginArgs = {
+      email: 'test@test.com',
+      password: 'testPassword',
+    };
+    it('should fail if user does not exist', async () => {
+      usersRepository.findOne.mockResolvedValue(null);
+      const result = await service.login(loginArgs);
+      expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(usersRepository.findOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+      );
+      expect(result).toEqual({ ok: false, error: 'User not found' });
+    });
+  });
+
   it.todo('findById');
   it.todo('editProfile');
   it.todo('verifyEmail');
