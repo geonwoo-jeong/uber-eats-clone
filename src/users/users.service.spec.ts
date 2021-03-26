@@ -22,6 +22,7 @@ type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 describe('UserService', () => {
   let service: UsersService;
   let usersRepository: MockRepository<User>;
+  let verificationRepository: MockRepository<Verification>;
 
   beforeAll(async () => {
     const modules = await Test.createTestingModule({
@@ -43,6 +44,7 @@ describe('UserService', () => {
     }).compile();
     service = modules.get<UsersService>(UsersService);
     usersRepository = modules.get(getRepositoryToken(User));
+    verificationRepository = modules.get(getRepositoryToken(Verification));
   });
 
   it('should be defined', () => {
@@ -68,11 +70,27 @@ describe('UserService', () => {
     it('should create a new user', async () => {
       usersRepository.findOne.mockReturnValue(undefined);
       usersRepository.create.mockReturnValue(createAccountArgs);
-      await service.createAccount(createAccountArgs);
+      usersRepository.save.mockResolvedValue(createAccountArgs);
+      verificationRepository.create.mockReturnValue({
+        user: createAccountArgs,
+      });
+      verificationRepository.save.mockResolvedValue({
+        code: 'code',
+      });
+      const result = await service.createAccount(createAccountArgs);
       expect(usersRepository.create).toHaveBeenCalledTimes(1);
       expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
       expect(usersRepository.save).toHaveBeenLastCalledWith(createAccountArgs);
+      expect(verificationRepository.create).toHaveBeenCalledTimes(1);
+      expect(verificationRepository.create).toHaveBeenCalledWith({
+        user: createAccountArgs,
+      });
+      expect(verificationRepository.save).toHaveBeenCalledTimes(1);
+      expect(verificationRepository.save).toHaveBeenCalledWith({
+        user: createAccountArgs,
+      });
+      expect(result).toEqual({ ok: true });
     });
   });
   it.todo('login');
